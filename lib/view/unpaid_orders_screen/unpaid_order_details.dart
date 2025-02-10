@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crater/consts/colors.dart';
 import 'package:crater/controllers/home_controller.dart';
 import 'package:crater/view/unpaid_orders_screen/components/unpaid_order_detail_row.dart';
@@ -23,7 +24,78 @@ class UnpaidOrderDetails extends StatefulWidget {
 class _UnpaidOrderDetailsState extends State<UnpaidOrderDetails> {
   final HomeController homeVM = Get.put(HomeController());
 
+  void showRemainingAmountSheet(int index) {
+    TextEditingController remainingController = TextEditingController();
 
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15.r)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.all(20.w),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              UrduTextWidget(text: "باقی", fontSize: 18.sp, fontWeight: FontWeight.w600),
+              SizedBox(height: 15.h),
+              TextField(
+                controller: remainingController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.r)),
+                  hintText: "",
+                ),
+              ),
+              SizedBox(height: 20.h),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.secondary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                ),
+                onPressed: () {
+                  if (remainingController.text.isNotEmpty) {
+                    setState(() {
+                      widget.order["items"][index]["remaining"] = remainingController.text;
+                    });
+                    Navigator.pop(context);
+                  }
+                },
+                child: UrduTextWidget(text: "محفوظ کریں", fontSize: 16.sp, fontWeight: FontWeight.w600, color: Colors.white),
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> updateOrder() async {
+    try {
+      // Reference to Firestore collection
+      var collection = FirebaseFirestore.instance.collection('records');
+
+      // Query to find the document with matching order_id inside paid_order
+      var querySnapshot = await collection
+          .where('paid_order.order_id', isEqualTo: widget.order["order_id"])
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        var docId = querySnapshot.docs.first.id; // Get document ID
+        await collection.doc(docId).set({
+          'paid_order': widget.order, // Update the paid_order field
+        }, SetOptions(merge: true));
+        print('Order updated successfully');
+      } else {
+        print('No matching order found');
+      }
+    } catch (e) {
+      print('Error updating order: $e');
+    }
+  }
 
   String getTotalPrice() {
     double total = 0.0;
@@ -185,7 +257,18 @@ class _UnpaidOrderDetailsState extends State<UnpaidOrderDetails> {
               physics: NeverScrollableScrollPhysics(),
               itemCount: widget.order["items"].length,
               itemBuilder: (context, index){
-              return UnpaidOrderDetailRow(
+              return widget.paid ? GestureDetector(
+                onTap: (){
+                  showRemainingAmountSheet(index);
+                },
+                child: PaidOrderDetailRow(
+                  itemName: widget.order["items"][index]["itemName"],
+                  quantity: widget.order["items"][index]["quantity"].toString(),
+                  price: widget.order["items"][index]["price"].toString(),
+                  totalPrice: widget.order["items"][index]["itemTotal"].toString(),
+                  remaining: widget.order["items"][index]["remaining"] ?? "",
+                ),
+              ) : UnpaidOrderDetailRow(
                   itemName: widget.order["items"][index]["itemName"],
                   quantity: widget.order["items"][index]["quantity"].toString(),
                   price: widget.order["items"][index]["price"].toString(),
@@ -230,6 +313,31 @@ class _UnpaidOrderDetailsState extends State<UnpaidOrderDetails> {
                 ),),
             ),
             SizedBox(height: 20.h,),
+            if(widget.paid == true)
+              Obx(
+                    ()=> GestureDetector(
+                  onTap: () async{
+                    await updateOrder();
+                    // await homeVM.generateInvoicePdf(widget.order, getTotalPrice());
+                    //await homeVM.generateInvoiceImage(widget.order, getTotalPrice(), context);
+                  },
+                  child: Container(
+                      margin: EdgeInsets.only(bottom: 10.h, right: 14.w, left: 14.w),
+                      height: 50.h,
+                      decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      alignment: Alignment.center,
+                      child: homeVM.loading.value ? CircularProgressIndicator(color: AppColors.primary,) : UrduTextWidget(
+                        text: "محفوظ کریں",
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primary,
+                      )
+                  ),
+                ),
+              ),
             if(widget.paid == false)
             Obx(
                 ()=> GestureDetector(
