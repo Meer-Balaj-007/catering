@@ -80,7 +80,7 @@ class _HomeScreenRowState extends State<HomeScreenRow> {
           padding:  EdgeInsets.only(left: 20.w),
           child: SizedBox(
             width: 70.w,
-            child: NumberInputField(controller: widget.controller),
+            child: NumberInputField(controller: widget.controller, hintText: "",),
           ),
         ),
       ],

@@ -27,7 +27,25 @@ class _HomeScreenState extends State<HomeScreen> {
     // TODO: implement initState
     super.initState();
     homeVM.fetchPrices();
+    homeVM.loadDataFromSharedPreferences();
     debugPrint("data: ${homeVM.items}");
+  }
+
+  void _pickDate(BuildContext context, TextEditingController controller) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2025),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null) {
+      String formattedDate = "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
+      homeVM.dateController.value.text = formattedDate;
+      homeVM.day.value = "${pickedDate.day}";
+      homeVM.month.value = "${pickedDate.month}";
+      homeVM.year.value = "${pickedDate.year}";
+    }
   }
 
   @override
@@ -60,9 +78,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   children: [
 
-                    UrduTextWidget(text: "مشتاق ٹینٹ سروس", fontSize: 16.sp, fontWeight: FontWeight.w600,),
+                    UrduTextWidget(text: "مشتاق ٹینٹ سروس", fontSize: 20.sp, fontWeight: FontWeight.w900,),
                     SizedBox(height: 15.h,),
-                    Text("03003307893", style: GoogleFonts.inter(
+                    Text("03003307863", style: GoogleFonts.inter(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w600,
                       color: AppColors.secondary
@@ -95,62 +113,144 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(
                     height: 20.h,
                   ),
-                  DatePickerWidget(),
-                  SizedBox(height: 15.h),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Align(
+                                alignment: Alignment.centerRight,
+                                child: UrduTextWidget(
+                                  text: "گاہک کا نمبر",
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.secondary,
+                                )),
+                            SizedBox(height: 15.h),
+                            Container(
+                              height: 40.h,
+                              decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(14.r)
+                              ),
+                              child: TextField(
+                                controller: homeVM.numberController.value,
+                                style: GoogleFonts.notoNastaliqUrdu( fontSize: 18.sp, color: Colors.black),
+                                keyboardType: TextInputType.number, // Opens number keyboard
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly, // Allows only numbers
+                                ],
+                                decoration: InputDecoration(
+                                  hintText: "",
+                                  hintStyle: GoogleFonts.notoNastaliqUrdu(color: Colors.black, fontSize: 14.sp),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(14.r),
+                                    borderSide: BorderSide(
+                                        width: 1.w,
+                                        color: Colors.black
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(14.r),
+                                    borderSide: BorderSide(
+                                        width: 1.w,
+                                        color: Colors.black
+                                    ),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(14.r),
+                                    borderSide: BorderSide(
+                                        width: 1.w,
+                                        color: Colors.black
+                                    ),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: 15.w,),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: UrduTextWidget(
+                                text: "تاریخ",
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            SizedBox(height: 15.h),
+                            GestureDetector(
+                              onTap: () => _pickDate(context, homeVM.dateController.value),
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: AbsorbPointer(
+                                  absorbing: true, // Prevents manual typing
+                                  child: SizedBox(
+                                    width: 170.w,
+                                    height: 40.h,
+                                    child: UrduInputField(
+                                      controller: homeVM.dateController.value,
+                                      hintText: "",
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
 
-                  Align(
-                      alignment: Alignment.centerRight,
-                      child: UrduTextWidget(
-                        text: "کسٹمر کا نام",
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w500,
-                      )),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
+
                   SizedBox(height: 15.h),
-                  UrduInputField(controller: homeVM.nameController.value),
                   Align(
                       alignment: Alignment.centerRight,
                       child: UrduTextWidget(
-                        text: "کسٹمر کا نمبر",
+                        text: "گاہک کا نام",
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.secondary,
                       )),
                   SizedBox(height: 15.h),
                   Container(
                     height: 40.h,
                     decoration: BoxDecoration(
-                        color: AppColors.secondary.withOpacity(0.30),
+                        color: Colors.transparent,
                         borderRadius: BorderRadius.circular(14.r)
                     ),
                     child: TextField(
-                      controller: homeVM.numberController.value,
-                      style: TextStyle(color: Colors.white, fontSize: 14.sp),
-                      keyboardType: TextInputType.number, // Opens number keyboard
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly, // Allows only numbers
-                      ],
+                      controller: homeVM.nameController.value,
+                      keyboardType: TextInputType.text,
+                      textDirection: TextDirection.rtl, // Right-to-left for Urdu
+                      style: GoogleFonts.notoNastaliqUrdu( fontSize: 18.sp, color: Colors.black),
                       decoration: InputDecoration(
-                        hintText: "نمبر",
-                        hintStyle: GoogleFonts.notoNastaliqUrdu(color: Colors.white, fontSize: 14.sp),
+                        hintText: "",
+                        hintStyle: GoogleFonts.notoNastaliqUrdu(color: Colors.black, fontSize: 14.sp),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14.r),
                           borderSide: BorderSide(
                               width: 1.w,
-                              color: Colors.white
+                              color: Colors.black
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14.r),
                           borderSide: BorderSide(
                               width: 1.w,
-                              color: Colors.white
+                              color: Colors.black
                           ),
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14.r),
                           borderSide: BorderSide(
                               width: 1.w,
-                              color: Colors.white
+                              color: Colors.black
                           ),
                         ),
                         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -162,26 +262,34 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   Row(
                     children: [
-                      Expanded(child: Column(
-                        children: [
-                          UrduTextWidget(text: "کل رقم", fontSize: 18.sp, fontWeight: FontWeight.w600),
-                        ],
-                      )),
-                      Expanded(child: Column(
-                        children: [
-                          UrduTextWidget(text: "رقم", fontSize: 18.sp, fontWeight: FontWeight.w600),
-                        ],
-                      )),
-                      Expanded(child: Column(
-                        children: [
-                          UrduTextWidget(text: "اشیاء کا نام", fontSize: 18.sp, fontWeight: FontWeight.w600),
-                        ],
-                      )),
-                      Expanded(child: Column(
-                        children: [
-                          UrduTextWidget(text: "تعداد", fontSize: 18.sp, fontWeight: FontWeight.w600),
-                        ],
-                      )),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            UrduTextWidget(text: "روپے", fontSize: 18.sp, fontWeight: FontWeight.w600),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            UrduTextWidget(text: "ریٹ", fontSize: 18.sp, fontWeight: FontWeight.w600),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            UrduTextWidget(text: "نام/آئٹم", fontSize: 18.sp, fontWeight: FontWeight.w600),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            UrduTextWidget(text: "تعداد", fontSize: 18.sp, fontWeight: FontWeight.w600),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                   SizedBox(
@@ -203,7 +311,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                       ),
                   ),
-                  SizedBox(height: 30.h,),
+                  SizedBox(height: 10.h,),
                   Obx(
                       ()=> GestureDetector(
                         onTap: (){

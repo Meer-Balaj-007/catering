@@ -1,3 +1,4 @@
+import 'package:crater/controllers/update_controller.dart';
 import 'package:crater/view/home_page/home_screen.dart';
 import 'package:crater/view/splash_screen/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -16,6 +17,10 @@ Future<void> main() async {
   SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp],
   );
+
+
+  Get.put(UpdateController());
+
   runApp(const MyApp());
 }
 

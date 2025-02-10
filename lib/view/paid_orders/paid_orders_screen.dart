@@ -34,8 +34,6 @@ class _PaidOrdersScreenState extends State<PaidOrdersScreen> {
 
           var ordersData = snapshot.data!.docs;
 
-          print(ordersData);
-
           return SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 14.0.w),

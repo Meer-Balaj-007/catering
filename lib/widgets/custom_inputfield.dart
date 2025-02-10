@@ -18,36 +18,36 @@ class UrduInputField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.secondary.withOpacity(0.30),
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(14.r)
       ),
       child: TextField(
         controller: controller,
         keyboardType: TextInputType.text,
         textDirection: TextDirection.rtl, // Right-to-left for Urdu
-        style: GoogleFonts.notoNastaliqUrdu( fontSize: 18.sp, color: Colors.white),
+        style: GoogleFonts.notoNastaliqUrdu( fontSize: 18.sp, color: Colors.black),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle:  GoogleFonts.notoNastaliqUrdu( fontSize: 16.sp, color: Colors.white),
+          hintStyle:  GoogleFonts.notoNastaliqUrdu( fontSize: 16.sp, color: Colors.black),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14.r),
             borderSide: BorderSide(
                 width: 1.w,
-                color: Colors.white
+                color: Colors.black
             ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14.r),
             borderSide: BorderSide(
                 width: 1.w,
-                color: Colors.white
+                color: Colors.black
             ),
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14.r),
               borderSide: BorderSide(
                 width: 1.w,
-                color: Colors.white
+                color: Colors.black
               ),
           ),
           contentPadding: EdgeInsets.symmetric(horizontal: 12.r, vertical: 10.h),

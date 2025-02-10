@@ -6,6 +6,7 @@ import 'package:crater/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../home_page/home_screen_row.dart';
 
@@ -17,7 +18,7 @@ class UpdatePriceScreen extends StatefulWidget {
 }
 
 class _UpdatePriceScreenState extends State<UpdatePriceScreen> {
-  final UpdateController updateVM = Get.put(UpdateController());
+  final UpdateController updateVM = Get.find<UpdateController>();
 
   @override
   void initState() {
@@ -34,7 +35,49 @@ class _UpdatePriceScreenState extends State<UpdatePriceScreen> {
       },
       child: Scaffold(
         backgroundColor: AppColors.primary,
-        appBar: CustomAppBar(title: "اشیاء کی قیمتیں"),
+        appBar: AppBar(
+          toolbarHeight: 115.h,
+          leadingWidth: 0.w,
+          centerTitle: true,
+          title: Row(
+            children: [
+              Container(
+                height: 70.h,
+                width: 70.w,
+                decoration: BoxDecoration(
+                    image: DecorationImage(image: AssetImage("assets/images/spoons.png"), fit: BoxFit.fill)
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+
+                    UrduTextWidget(text: "مشتاق ٹینٹ سروس", fontSize: 20.sp, fontWeight: FontWeight.w900,),
+                    SizedBox(height: 15.h,),
+                    Text("03003307863", style: GoogleFonts.inter(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.secondary
+                    ),),
+                    Text("03027312235", style: GoogleFonts.inter(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.secondary
+                    ),),
+                    SizedBox(height: 10.h,),
+                    UrduTextWidget(text: "سیداں والی کھوئی، نواب پور روڈ، ملتان", fontSize: 14.sp, fontWeight: FontWeight.w600,),
+
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 70.h,
+                width: 70.w,
+              ),
+            ],
+          ),
+          backgroundColor: AppColors.primary,
+        ),
         body: SafeArea(child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 14.0.w),
@@ -46,13 +89,13 @@ class _UpdatePriceScreenState extends State<UpdatePriceScreen> {
                     SizedBox(width: 20.w,),
                     Column(
                       children: [
-                        UrduTextWidget(text: "رقم", fontSize: 18.sp, fontWeight: FontWeight.w600),
+                        UrduTextWidget(text: "ریٹ", fontSize: 18.sp, fontWeight: FontWeight.w600),
                       ],
                     ),
                     Expanded(child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        UrduTextWidget(text: "اشیاء کا نام", fontSize: 18.sp, fontWeight: FontWeight.w600),
+                        UrduTextWidget(text: "نام/آئٹم", fontSize: 18.sp, fontWeight: FontWeight.w600),
                       ],
                     )),
                   ],
@@ -60,19 +103,21 @@ class _UpdatePriceScreenState extends State<UpdatePriceScreen> {
                 SizedBox(
                   height: 20.h,
                 ),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(), // Disable scrolling within GridView
-                  itemCount: updateVM.items.length, // Length of the map
-                  itemBuilder: (context, index) {
-                    var controller = updateVM.getControllerForItem(updateVM.items[index]["name"].toString());
+                Obx(
+                  ()=> ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(), // Disable scrolling within GridView
+                    itemCount: updateVM.items.length, // Length of the map
+                    itemBuilder: (context, index) {
+                      var controller = updateVM.getControllerForItem(updateVM.items[index]["name"].toString());
 
-                    return Padding(
-                      padding: EdgeInsets.only(top: index == 0 ? 0 : 8.0),
-                      child: UpdateScreenRow(items: updateVM.items[index], controller: controller),
-                    );
+                      return Padding(
+                        padding: EdgeInsets.only(top: index == 0 ? 0 : 8.0),
+                        child: UpdateScreenRow(items: updateVM.items[index], controller: controller),
+                      );
 
-                  },
+                    },
+                  ),
                 ),
 
                 SizedBox(height: 20.h,),

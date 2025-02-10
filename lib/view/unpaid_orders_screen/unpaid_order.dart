@@ -21,33 +21,12 @@ class UnpaidOrderScreen extends StatefulWidget {
 }
 
 class _UnpaidOrderScreenState extends State<UnpaidOrderScreen> {
-  List<Map<String, dynamic>> ordersData = []; // List to hold unpaid orders
 
   @override
   void initState() {
     super.initState();
-    ordersData.clear();
-    _loadDataFromSharedPreferences();
   }
 
-  Future<void> _loadDataFromSharedPreferences() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String>? storedData = prefs.getStringList('orders');
-    debugPrint("Orders stored: $storedData");
-
-    if (storedData != null) {
-      List<Map<String, dynamic>> loadedData =
-      storedData.map((item) => jsonDecode(item) as Map<String, dynamic>).toList();
-
-      debugPrint("Orders: $loadedData");
-
-      setState(() {
-        ordersData = loadedData;
-      });
-    } else {
-      debugPrint("No orders data found.");
-    }
-  }
 
   @override
   void dispose () {
@@ -62,7 +41,49 @@ class _UnpaidOrderScreenState extends State<UnpaidOrderScreen> {
       length: 2, // Two tabs: Unpaid Orders & Paid Orders
       child: Scaffold(
         backgroundColor: AppColors.primary,
-        appBar: CustomAppBar(title: "آرڈرز"),
+        appBar: AppBar(
+          toolbarHeight: 115.h,
+          leadingWidth: 0.w,
+          centerTitle: true,
+          title: Row(
+            children: [
+              Container(
+                height: 70.h,
+                width: 70.w,
+                decoration: BoxDecoration(
+                    image: DecorationImage(image: AssetImage("assets/images/spoons.png"), fit: BoxFit.fill)
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+
+                    UrduTextWidget(text: "مشتاق ٹینٹ سروس", fontSize: 20.sp, fontWeight: FontWeight.w900,),
+                    SizedBox(height: 15.h,),
+                    Text("03003307863", style: GoogleFonts.inter(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.secondary
+                    ),),
+                    Text("03027312235", style: GoogleFonts.inter(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.secondary
+                    ),),
+                    SizedBox(height: 10.h,),
+                    UrduTextWidget(text: "سیداں والی کھوئی، نواب پور روڈ، ملتان", fontSize: 14.sp, fontWeight: FontWeight.w600,),
+
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 70.h,
+                width: 70.w,
+              ),
+            ],
+          ),
+          backgroundColor: AppColors.primary,
+        ),
         body: Column(
           children: [
             SizedBox(height: 20.h,),
@@ -117,50 +138,12 @@ class UnpaidOrdersView extends StatefulWidget {
 class _UnpaidOrdersViewState extends State<UnpaidOrdersView> {
   final HomeController homeVM = Get.put(HomeController());
 
-  // Map of Urdu month names to English month names
-  final Map<String, String> urduToEnglishMonth = {
-    "جنوری": "January",
-    "فروری": "February",
-    "مارچ": "March",
-    "اپریل": "April",
-    "مئی": "May",
-    "جون": "June",
-    "جولائی": "July",
-    "اگست": "August",
-    "ستمبر": "September",
-    "اکتوبر": "October",
-    "نومبر": "November",
-    "دسمبر": "December",
-  };
-
-  // Convert order data into DateTime and sort
-  List<Map<String, dynamic>> ordersData = []; // List to hold unpaid orders
 
   @override
   void initState() {
     super.initState();
-    ordersData.clear();
-    _loadDataFromSharedPreferences();
   }
 
-  Future<void> _loadDataFromSharedPreferences() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String>? storedData = prefs.getStringList('orders');
-    debugPrint("Orders stored: $storedData");
-
-    if (storedData != null) {
-      List<Map<String, dynamic>> loadedData =
-      storedData.map((item) => jsonDecode(item) as Map<String, dynamic>).toList();
-
-      debugPrint("Orders: $loadedData");
-
-      setState(() {
-        ordersData = loadedData;
-      });
-    } else {
-      debugPrint("No orders data found.");
-    }
-  }
 
   @override
   void dispose () {
@@ -169,58 +152,59 @@ class _UnpaidOrdersViewState extends State<UnpaidOrdersView> {
 
   @override
   Widget build(BuildContext context) {
-    // Sort the orders before passing them to the ListView
 
-    return ordersData.isNotEmpty
-        ? SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 14.0.w),
-        child: Column(
-          children: [
-            SizedBox(height: 20.h),
-            ListView.builder(
-              itemCount: ordersData.length,
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                return Column(
-                  children: [
-                    if (index != 0)
-                      Container(
-                        height: 1.h,
-                        margin: EdgeInsets.symmetric(vertical: 15.h, horizontal: 40.w),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              AppColors.primary,
-                              AppColors.secondary,
-                              AppColors.primary
-                            ],
+    return Obx(
+        ()=> homeVM.ordersData.isNotEmpty
+          ? SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 14.0.w),
+          child: Column(
+            children: [
+              SizedBox(height: 20.h),
+              ListView.builder(
+                itemCount: homeVM.ordersData.length,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return Column(
+                    children: [
+                      if (index != 0)
+                        Container(
+                          height: 1.h,
+                          margin: EdgeInsets.symmetric(vertical: 15.h, horizontal: 40.w),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                AppColors.primary,
+                                AppColors.secondary,
+                                AppColors.primary
+                              ],
+                            ),
                           ),
                         ),
+                      GestureDetector(
+                        onTap: () {
+                          Get.to(UnpaidOrderDetails(
+                            order: homeVM.ordersData[index],
+                            paid: false,
+                          ));
+                        },
+                        child: UnpaidOrderWigdet(data: homeVM.ordersData[index]),
                       ),
-                    GestureDetector(
-                      onTap: () {
-                        Get.to(UnpaidOrderDetails(
-                          order: ordersData[index],
-                          paid: false,
-                        ));
-                      },
-                      child: UnpaidOrderWigdet(data: ordersData[index]),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ],
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
         ),
-      ),
-    )
-        : Center(
-      child: UrduTextWidget(
-        text: "غیر ادا شدہ آرڈرز موجود نہیں",
-        fontSize: 16.sp,
-        fontWeight: FontWeight.w600,
+      )
+          : Center(
+        child: UrduTextWidget(
+          text: "غیر ادا شدہ آرڈرز موجود نہیں",
+          fontSize: 16.sp,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
